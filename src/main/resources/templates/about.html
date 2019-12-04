@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head  th:replace="_fragments :: head(~{::title})">
+<head  th:replace="_fragments :: head(~{::title},汪凯飞的个人博客，学习，分享，交流)">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>关于我</title>
@@ -53,26 +53,26 @@
           <div class="ui attached segment">
             <div class="ui orange basic left pointing label">编程</div>
             <div class="ui orange basic left pointing label">写作</div>
-            <div class="ui orange basic left pointing label">思考</div>
+            <div class="ui orange basic left pointing label">游戏</div>
             <div class="ui orange basic left pointing label">运动</div>
           </div>
           <div class="ui attached segment">
             <div class="ui teal basic left pointing label m-margin-tb-tiny">Java</div>
             <div class="ui teal basic left pointing label m-margin-tb-tiny">JavaScript</div>
             <div class="ui teal basic left pointing label m-margin-tb-tiny">Node</div>
-            <div class="ui teal basic left pointing label m-margin-tb-tiny">React</div>
-            <div class="ui teal basic left pointing label m-margin-tb-tiny">RN</div>
+            <div class="ui teal basic left pointing label m-margin-tb-tiny">VUE</div>
+            <div class="ui teal basic left pointing label m-margin-tb-tiny">Spring</div>
             <div class="ui teal basic left pointing label m-margin-tb-tiny">MYSQL</div>
             <div class="ui teal basic left pointing label m-margin-tb-tiny">...</div>
           </div>
           <div class="ui bottom attached segment">
-            <a href="#" class="ui circular icon button"><i class="github icon"></i></a>
+            <a href="#" class="ui circular icon button" data-content="751768390" data-position="bottom center"><i class="github icon"></i></a>
             <a href="#" class="ui wechat circular icon button"><i class="weixin icon"></i></a>
-            <a href="#" class="ui qq circular icon button" data-content="751768390" data-position="bottom center"><i class="qq icon"></i></a>
+            <a href="mqqwpa://im/chat?chat_type=wpa&uin=751768390&version=1&src_type=web&web_src=oicqzone.com" class="ui qq circular icon button" data-content="751768390" data-position="bottom center"><i class="qq icon"></i></a>
           </div>
 
           <div class="ui wechat-qr flowing popup transition hidden">
-            <img src="../static/images/wechat.jpg" alt="" class="ui rounded image" style="width: 110px">
+            <img th:src="@{/images/wechat.jpg}" alt="" class="ui rounded image" style="width: 110px">
           </div>
           </div>
       </div>
