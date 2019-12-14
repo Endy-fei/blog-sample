@@ -1,8 +1,9 @@
-package com.lrm.service;
+package com.lrm.service.impl;
 
 import com.lrm.NotFoundException;
 import com.lrm.dao.TagRepository;
 import com.lrm.po.Tag;
+import com.lrm.service.TagService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     @Override
     public Tag getTag(Long id) {
-        return tagRepository.findOne(id);
+        return tagRepository.findById(id).get();
     }
 
     @Override
@@ -62,7 +63,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<Tag> listTag(String ids) { //1,2,3
-        return tagRepository.findAll(convertToList(ids));
+        return tagRepository.findAllById(convertToList(ids));
     }
 
     private List<Long> convertToList(String ids) {
@@ -80,7 +81,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     @Override
     public Tag updateTag(Long id, Tag tag) {
-        Tag t = tagRepository.findOne(id);
+        Tag t = tagRepository.findById(id).get();
         if (t == null) {
             throw new NotFoundException("不存在该标签");
         }
@@ -93,6 +94,6 @@ public class TagServiceImpl implements TagService {
     @Transactional
     @Override
     public void deleteTag(Long id) {
-        tagRepository.delete(id);
+        tagRepository.deleteById(id);
     }
 }

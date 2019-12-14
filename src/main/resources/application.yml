@@ -1,14 +1,19 @@
 spring:
-  thymeleaf:
-    mode: HTML
+  mail:
+    host: smtp.mxhichina.com
+    username: wangkaifei@myconjure.com
+    password: Zw258123
+    default-encoding: UTF-8
+    port: 80
+#  thymeleaf:
+#    mode: HTML
   profiles:
     active: pro
   messages:
     basename: i18n/messages
 server:
   #端口号
-  port: 8089
-  context-path: /
+  port: 8889
 
 comment.avatar: /images/avatar.png
 

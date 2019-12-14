@@ -1,13 +1,19 @@
-package com.lrm.service;
+package com.lrm.service.impl;
 
 import com.lrm.dao.CommentRepository;
+import com.lrm.model.Email;
+import com.lrm.model.EmailParam;
 import com.lrm.po.Comment;
+import com.lrm.service.CommentService;
+import com.lrm.service.SendmailService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,14 +23,18 @@ import java.util.List;
  */
 @Service
 public class CommentServiceImpl implements CommentService {
+    private final SendmailService sendmailServiceImpl;
+    private final CommentRepository commentRepository;
 
-    @Autowired
-    private CommentRepository commentRepository;
+    public CommentServiceImpl(SendmailService sendmailServiceImpl, CommentRepository commentRepository) {
+        this.sendmailServiceImpl = sendmailServiceImpl;
+        this.commentRepository = commentRepository;
+    }
 
     @Override
     public List<Comment> listCommentByBlogId(Long blogId) {
         Sort sort = new Sort("createTime");
-        List<Comment> comments = commentRepository.findByBlogIdAndParentCommentNull(blogId,sort);
+        List<Comment> comments = commentRepository.findByBlogIdAndParentCommentNull(blogId, sort);
         return eachComment(comments);
     }
 
@@ -33,7 +43,27 @@ public class CommentServiceImpl implements CommentService {
     public Comment saveComment(Comment comment) {
         Long parentCommentId = comment.getParentComment().getId();
         if (parentCommentId != -1) {
-            comment.setParentComment(commentRepository.findOne(parentCommentId));
+            comment.setParentComment(commentRepository.findById(parentCommentId).get());
+            String emailTo = commentRepository.findById(parentCommentId).get().getEmail();
+            Email email = new Email();
+            email.setSubject("有人在汪凯飞的个人博客上回复了您");
+            email.setToUser(new String[]{emailTo});
+            EmailParam emailParam = new EmailParam();
+            emailParam.setTitle("有人@了您");
+            emailParam.setSample(comment.getNickname() + "在《" + comment.getBlog().getTitle() + "》中回复您:");
+            emailParam.setTexts("“"+comment.getContent()+"”");
+            emailParam.setUrl("https://www.myconjure.com/blog/" + comment.getBlog().getId());
+            emailParam.setUrlName("点击查看详情");
+            email.setContent(emailParam);
+
+            try {
+                sendmailServiceImpl.thymeleafEmail(email);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
         } else {
             comment.setParentComment(null);
         }
@@ -44,6 +74,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 循环每个顶级的评论节点
+     *
      * @param comments
      * @return
      */
@@ -51,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> commentsView = new ArrayList<>();
         for (Comment comment : comments) {
             Comment c = new Comment();
-            BeanUtils.copyProperties(comment,c);
+            BeanUtils.copyProperties(comment, c);
             commentsView.add(c);
         }
         //合并评论的各层子代到第一级子代集合中
@@ -60,7 +91,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     *
      * @param comments root根节点，blog不为空的对象集合
      * @return
      */
@@ -68,7 +98,7 @@ public class CommentServiceImpl implements CommentService {
 
         for (Comment comment : comments) {
             List<Comment> replys1 = comment.getReplyComments();
-            for(Comment reply1 : replys1) {
+            for (Comment reply1 : replys1) {
                 //循环迭代，找出子代，存放在tempReplys中
                 recursively(reply1);
             }
@@ -81,18 +111,20 @@ public class CommentServiceImpl implements CommentService {
 
     //存放迭代找出的所有子代的集合
     private List<Comment> tempReplys = new ArrayList<>();
+
     /**
      * 递归迭代，剥洋葱
+     *
      * @param comment 被迭代的对象
      * @return
      */
     private void recursively(Comment comment) {
         tempReplys.add(comment);//顶节点添加到临时存放集合
-        if (comment.getReplyComments().size()>0) {
+        if (comment.getReplyComments().size() > 0) {
             List<Comment> replys = comment.getReplyComments();
             for (Comment reply : replys) {
                 tempReplys.add(reply);
-                if (reply.getReplyComments().size()>0) {
+                if (reply.getReplyComments().size() > 0) {
                     recursively(reply);
                 }
             }

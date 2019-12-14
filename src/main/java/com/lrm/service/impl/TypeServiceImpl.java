@@ -1,8 +1,9 @@
-package com.lrm.service;
+package com.lrm.service.impl;
 
 import com.lrm.NotFoundException;
 import com.lrm.dao.TypeRepository;
 import com.lrm.po.Type;
+import com.lrm.service.TypeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class TypeServiceImpl implements TypeService {
     @Transactional
     @Override
     public Type getType(Long id) {
-        return typeRepository.findOne(id);
+        return typeRepository.findById(id).get();
     }
 
     @Override
@@ -63,7 +64,7 @@ public class TypeServiceImpl implements TypeService {
     @Transactional
     @Override
     public Type updateType(Long id, Type type) {
-        Type t = typeRepository.findOne(id);
+        Type t = typeRepository.findById(id).get();
         if (t == null) {
             throw new NotFoundException("不存在该类型");
         }
@@ -76,6 +77,6 @@ public class TypeServiceImpl implements TypeService {
     @Transactional
     @Override
     public void deleteType(Long id) {
-        typeRepository.delete(id);
+        typeRepository.deleteById(id);
     }
 }
