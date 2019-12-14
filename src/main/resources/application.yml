@@ -1,10 +1,10 @@
 spring:
   mail:
-    host: smtp.mxhichina.com
-    username: wangkaifei@myconjure.com
-    password: Zw258123
+    host: #smtp服务器
+    username: #用户名
+    password: #密码
     default-encoding: UTF-8
-    port: 80
+    port: #端口
 #  thymeleaf:
 #    mode: HTML
   profiles:
